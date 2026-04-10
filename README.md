@@ -21,8 +21,10 @@ After you change any file, use **Reload** on the extension card on `chrome://ext
 ## Lock to your NAS (not committed)
 
 1. Copy **`synology-local.json.example`** → **`synology-local.json`** in this folder.
-2. Replace the placeholder with your real DSM origin, e.g. `https://10.0.0.210:5001` (scheme + host + port, no path).
+2. Replace the placeholders with your real DSM **origins** (scheme + host + port, no path). The string must match the browser address bar exactly.
 3. Reload the extension.
+
+**HTTP vs HTTPS on a local NAS:** Synology DSM’s **defaults** are usually **HTTP on port 5000** and **HTTPS on port 5001** (you can change this in DSM). A LAN IP can still use `https://…`—it is often a **self-signed certificate**, which Chrome may warn about until you accept it. If you open DSM with `http://10.0.0.210:5000`, put that origin in `allowedOrigins`; if you use `https://10.0.0.210:5001`, use that. You can list **both** in the array if you use either depending on the day.
 
 **`synology-local.json` is gitignored** so your IP or hostname is not pushed. The tracked repo only ships the `.example` file.
 
