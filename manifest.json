@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Synology Upload Protector",
+  "version": "1.0",
+  "description": "Prevents closing the tab while uploading to Synology Photos.",
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js"],
+      "matches": ["*://*/*"]
+    }
+  ]
+}
