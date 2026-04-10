@@ -1,22 +1,42 @@
-// content.js — public repo uses broad manifest matches; we only inject on Synology Photos URLs.
+// content.js — inject only on Synology Photos URLs; optional NAS lock via gitignored synology-local.json.
 
-function isSynologyPhotosUrl() {
+(async function () {
+  let allowedOrigins = null;
   try {
-    const params = new URLSearchParams(window.location.search);
-    const launchApp = params.get('launchApp') || '';
-    if (launchApp.includes('SYNO.Foto')) return true;
-    if (window.location.hash.includes('SYNO.Foto')) return true;
-    return false;
+    const res = await fetch(chrome.runtime.getURL('synology-local.json'));
+    if (res.ok) {
+      const cfg = await res.json();
+      if (Array.isArray(cfg.allowedOrigins) && cfg.allowedOrigins.length > 0) {
+        allowedOrigins = cfg.allowedOrigins;
+      }
+    }
   } catch {
-    return false;
+    /* missing or unreadable config → no origin filter (clone-friendly) */
   }
-}
 
-if (isSynologyPhotosUrl()) {
+  function isSynologyPhotosUrl() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const launchApp = params.get('launchApp') || '';
+      if (launchApp.includes('SYNO.Foto')) return true;
+      if (window.location.hash.includes('SYNO.Foto')) return true;
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  function isAllowedOrigin() {
+    if (!allowedOrigins) return true;
+    return allowedOrigins.includes(window.location.origin);
+  }
+
+  if (!isSynologyPhotosUrl() || !isAllowedOrigin()) return;
+
   const script = document.createElement('script');
   script.src = chrome.runtime.getURL('inject.js');
   script.onload = function () {
     this.remove();
   };
   (document.head || document.documentElement).appendChild(script);
-}
+})();

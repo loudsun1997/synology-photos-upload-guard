@@ -1,0 +1,3 @@
+{
+  "allowedOrigins": ["https://YOUR_NAS_IP_OR_HOSTNAME:5001"]
+}
